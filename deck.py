@@ -29,6 +29,9 @@ class CardCollection:
 	def shuffle(self):
 		self.cards = random.sample(self.cards, len(self))
 
+	def draw(self):
+		return self.cards.pop(0)
+
 class Deck(CardCollection):
 	def __init__(self):
 		super().__init__()

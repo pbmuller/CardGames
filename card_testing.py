@@ -39,5 +39,5 @@ d = Deck()
 # 	print(i, card)
 
 gf = GoFish()
-
+gf.game_loop()
 
