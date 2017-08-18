@@ -30,7 +30,12 @@ class CardCollection:
 		self.cards = random.sample(self.cards, len(self))
 
 	def draw(self):
-		return self.cards.pop(0)
+		try:
+			card = self.cards.pop(0)
+		except IndexError:
+			return None
+		else:
+			return card
 
 class Deck(CardCollection):
 	def __init__(self):
@@ -59,6 +64,9 @@ class Deck(CardCollection):
 		for pile in card_piles:
 			pile = Hand.from_card_list(pile)
 		return tuple(card_piles)
+
+class EukerDeck(CardCollection):
+	pass
 
 
 class Hand(CardCollection):

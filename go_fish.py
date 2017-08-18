@@ -2,6 +2,7 @@ from card import Card
 from deck import Deck, Hand, CardCollection
 from player import Player
 import os
+import random
 
 class GoFish:
 
@@ -30,9 +31,17 @@ class GoFish:
 		playAgain = True
 		while playAgain:
 			if self.game_over():
+				if self.players[0].pairs > self.players[1].pairs:
+					print("Congratulations! You win")
+				elif self.players[0].pairs == self.players[1].pairs:
+					print("Looks like this game was a draw")
+				else:
+					print("Bummer, the computer won")
 				quit = input("Would you like to play again? [Y/n]")
 				if quit:
 					playAgain = False
+				else:
+					self.__init__()
 			else:
 				self.clear_screen()
 				self.print_game_state()
@@ -48,22 +57,30 @@ class GoFish:
 
 	def player_turn(self):
 		move = input(">").lower().split()
+		if len(move) == 0:
+			input("Sorry, but you gotta enter something")
+			return True
 		if move[0] == "pair":
-			if move[1] in Card.valid_values:
+			if len(move) > 1 and move[1] in Card.valid_values:
 				return self.pair_in_hand(move[1])
 			else:
 				input("You must enter a valid card value")
+				return True
 		elif move[0] == "fish":
-			if move[1] in Card.valid_values:
-				self.fish(move[1])
+			if len(move) > 1 and move[1] in Card.valid_values:
+				return self.fish(move[1])
 			else:
 				input("You must enter a valid card value")
+				return True
 		elif move[0] == "help":
 			self.help()
 			input("Press Enter to continue")
-			return False
-		elif move == "quit":
+			return True
+		elif move[0] == "quit":
 			return None
+		else:
+			input("Sorry, that was an invalid commad")
+			return True
 		
 
 	def help(self):
@@ -152,19 +169,70 @@ That was a lot of rules, but here are the main things:
 				if card.value == card_value and card_count > 0:
 					self.players[self.turn].hand.remove(card)
 					card_count -= 1
-			input("Found a pair of {}{}s!".format(card_value, "e" if card_value == "six" else ""))
+			if self.is_human_turn():
+				input("Found a pair of {}{}s!".format(card_value, "e" if card_value == "six" else ""))
+			else:
+				input("The computer found a pair of {}{}s in hand!".format(card_value, "e" if card_value == "six" else ""))
 			return True #Do repeat the turn because we found a pair
 		else:
 			return False #Don't repeat the turn because we didn't find a pair
 	
 	def fish(self, card_value):
-		caller = self.player[self.turn]
-		opponent = self.player[(self.turn + 1) % 2]
+		caller = self.players[self.turn]
+		opponent = self.players[(self.turn + 1) % 2]
 		caller_has_card = False
+		# import pdb; pdb.set_trace()
 		for card in caller.hand:
 			if card.value == card_value:
 				caller_has_card = True
+				caller_card = card
 		if caller_has_card:
-
+			matched_card = None
+			for card in opponent.hand:
+				if card.value == card_value:
+					matched_card = card
+			if matched_card:
+				caller.hand.remove(caller_card)
+				opponent.hand.remove(matched_card)
+				caller.scored_pair()
+				if self.is_human_turn():
+					input("Your oppenent had a {}".format(matched_card.value))
+				else:
+					input("The computer asked for a {} and you had one".format(card_value))
+				return True
+			else:
+				drawn_card = self.game_deck.draw()
+				if not drawn_card:
+					input("There are no more cards in the deck to draw!")
+					return False
+				elif drawn_card.value == card_value:
+					caller.hand.remove(caller_card)
+					caller.scored_pair()
+					if self.is_human_turn():
+						input("You drew a {} from the deck".format(drawn_card.value))
+					else:
+						input("The computer asked for a {} and drew {} from the deck".format(card_value, drawn_card.value))
+					return True
+				else:
+					caller.hand.append(drawn_card)
+					if self.is_human_turn():
+						input("Go Fish!")
+					else:
+						input("The computer asked for a {} and had to go fish".format(card_value))
+					return False
 		else:
-			return True #because I want to 
+			if self.is_human_turn():
+				input("You must enter a card that you have in hand")
+			return True #because I want to give them another chance
+
+	def computer_turn(self):
+		computer = self.players[1]
+		for card in computer.hand:
+			for other_card in computer.hand:
+				if card == other_card:
+					continue
+				if card.value == other_card.value:
+					return self.pair_in_hand(card.value)
+		return self.fish(random.choice(computer.hand).value)
+
+

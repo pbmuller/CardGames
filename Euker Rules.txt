@@ -1,0 +1,26 @@
+Euker Rules:
+
+	# 9's and up with aces
+	# trump suit
+	# dealt in two's and three's alternating, all players get 5.
+	# top of the last four cards (kitty) is flipped
+	# The order for choosing suit is a bit intense
+	# Jack of the trump is highest, Jack of same color is second highest
+	# Jack of trump, Jack of color, ace, k, q, 10, 9 of trump. Face otherwise
+
+	# Winner of hand plays next
+	# at start of game, left of dealer goes.
+	# you must follow the suit of the card that was played if able.
+		if you don't have the suit that was played, you can play whatever suit you want.
+		if you don't play trump, you lose automatically. If you play, trump you automatically win
+
+	#######
+	points
+
+	to get points on a round,
+	 	1 point = your team win 3 out of 5
+	 	2 points = your team wins 5 out of 5
+	 	2 points = Euker, other team calls, and your team still wins 3 out of 5
+	 	1 points = loner, you call suit, and win 3 or 4 out of 5
+	 	2 points = loner, you call suit,other team eukers
+	 	4 points = Loner, you call suit, and win all 5 cards 
